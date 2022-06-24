@@ -1,24 +1,27 @@
+window.addEventListener('load', initApp());
 
-let toDoList = [
-    {
-        "title": "test to do item",
-        "date": "2022-06-23",
-        "status": "done"
-    }
-]
-
+let toDoList = [{
+    "title": "test to do item",
+    "date": "2022-06-23",
+    "status": "done"
+}]
 
 
-const test = () => { console.log('hi') };
-test();
 
-let temp = JSON.stringify(toDoList);
-console.log(`Stringified object: ${temp}`)
+function initApp() {
+    let toDoList = readFromLocalStorage('toDoList');
 
-window.localStorage.setItem('toDoList', temp);
+    toDoList ? console.log(toDoList) : console.log('nothing to do!');
+}
 
-let tempBack = window.localStorage.getItem('toDoList');
-console.log(`Stringified object from localStorage: ${tempBack}`)
+function writeToLocalStorage(key, value) {
+    window.localStorage.setItem(key, JSON.stringify(value));
+}
 
-tempBack = JSON.parse(toDoList);
-console.log(tempBack)
+function resetLocalStorage(key) {
+    window.localStorage.setItem(key, JSON.stringify([]));
+}
+
+function readFromLocalStorage(key) {
+    return JSON.parse(window.localStorage.getItem(key));
+}
