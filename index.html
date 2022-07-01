@@ -5,19 +5,24 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>To Do App</title>
+    <link rel="stylesheet" href="index.css">
 </head>
 
 <body>
 
 
-    <button type="button" onclick="writeToLocalStorage('toDoList', toDoList)">Add dummy</button>
-
-    <button type="button" onclick="removeFromLocalStorage('toDoList')">reset</button>
 
     <div class="app">
-        <div class="app__message"></div>
+        <div class="app__controls">
+            <input type="text" value="Add a to do" id="to-do-text">
+            <button type="button" data-action="add-item">Add new item</button>
+        </div>
+        <div class="app__message">Nothing to to!</div>
         <div class="app__content"></div>
+        <div class="app__controls">
+            <button type="button" data-action="reset">Reset</button>
+        </div>
     </div>
 
 

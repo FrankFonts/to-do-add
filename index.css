@@ -1,0 +1,41 @@
+.hidden {
+  display: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.app {
+  width: 100%;
+}
+.app__controls {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  margin: 0 0 8px 0;
+  padding: 4px 8px;
+}
+.app__message {
+  width: 100%;
+  border: 1px solid #ddd;
+  margin: 0 0 8px 0;
+  padding: 4px 8px;
+}
+.app__content {
+  width: 100%;
+  border: 1px solid #ddd;
+  margin: 0 0 8px 0;
+}
+.app__item {
+  width: 100%;
+  border: 1px solid #ddd;
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 8px;
+}
+
+/*# sourceMappingURL=index.css.map */
