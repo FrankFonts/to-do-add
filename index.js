@@ -1,137 +1,169 @@
-let toDoList = readFromLocalStorage('toDoList');
+window.addEventListener('load', function() {
+    // let toDoList = readFromLocalStorage('toDoList');
 
-window.addEventListener('load', updateApp);
+    let toDoList = [{
+        'title': 'task title 1',
+        'date': 'task date 1',
+        'status': 'task status 1',
+        'labelList': ['label 1', 'label 2']
+    }, {
+        'title': 'task title 2',
+        'date': 'task date 2',
+        'status': 'task status 2',
+        'labelList': ['label 3', 'label 4']
+    }, ]
 
-document.addEventListener('click', manageClicks);
+    renderApp('.app__content', toDoList);
+});
 
-function manageClicks(e) {
-    let element = e.target.closest('button');
-    if (element === null) return;
+// document.addEventListener('click', manageClicks);
 
-    let action = element.getAttribute('data-action');
+/**
+ * Render the list to the DOM
+ * @param {String} element The element to use as DOM container
+ * @param {Array} list The list to render into DOM container
+ */
+function renderApp(element, list) {
+    let elementToRenderListInto = document.querySelector(element);
 
-    console.log(action);
+    if (!elementToRenderListInto || !list) return;
 
-    if (action === 'reset') {
-        toDoList = [];
-        removeFromLocalStorage('toDoList');
+    elementToRenderListInto.innerHTML = renderList(list);
+
+}
+
+
+
+let renderList = list => {
+
+    if (list.length === 0) {
+        return `
+        <div class="app__message">Nothing to to!</div>
+        `
     }
-    if (action === 'add-item') {
-        let toDoString = readUserInput();
-        updateList(toDoString, toDoList);
-        writeToLocalStorage('toDoList', toDoList);
-    }
-    if (action === 'delete-item') {
-        let id = getItemId(element);
-        deleteItemFromList(id, toDoList);
-        writeToLocalStorage('toDoList', toDoList);
-    }
-    updateApp();
-}
 
-
-function getItemId(element) {
-    return element.closest('.app__item').getAttribute('data-id');
-}
-
-function deleteItemFromList(id, list) {
-    list.forEach(function(listItem, index) {
-        if (listItem['id'] === id) {
-            list.splice(index, 1);
-        }
-    })
-}
-
-function readUserInput() {
-    let toDoString = document.querySelector('#to-do-text').value;
-    return toDoString;
-}
-
-function updateList(string, list) {
-    let obj = { 'title': string };
-    obj['date'] = new Date();
-    obj['status'] = 'undone';
-
-    let id = (Math.floor(Math.random() * 1000000000000000)).toString();
-    obj['id'] = id;
-    list.push(obj);
-
-}
-
-
-
-
-function updateApp() {
-    let toDoList = readFromLocalStorage('toDoList');
-    let message = document.querySelector('.app__message');
-
-    renderList(toDoList);
-
-    if (toDoList) {
-        message.classList.add('hidden');
-    } else {
-        message.classList.remove('hidden');
-    }
-}
-
-function writeToLocalStorage(key, value) {
-    window.localStorage.setItem(key, JSON.stringify(value));
-}
-
-function removeFromLocalStorage(key) {
-    window.localStorage.removeItem(key);
-}
-
-function readFromLocalStorage(key) {
-    return JSON.parse(window.localStorage.getItem(key)) || [];
-}
-
-function renderList(list) {
-    let contentElement = document.querySelector('.app__content')
-    contentElement.innerHTML = '';
-
-    if (list && list !== []) {
-        list.forEach(item => {
-            // document.querySelector('.app__content').append(toDoElement(item.title, item.date, item.status));
-            document.querySelector('.app__content').innerHTML +=
+    let labelTemplate = (string, item) => {
+        return string + `
+            
+            <span class="task__label">${item}</span>
                 `
-                <div class="app__item" data-id="${item.id}">
-                    <div class="title">
-                        ${item.title}
-                    </div>
-                    <div class="date">
-                        ${item.date}
-                    </div>
-                    <div class="status">
-                        ${item.status}
-                    </div>
-                    <div class="done">
-                        <button type="button" data-action="set-item-status">Item done</button>
-                    </div>
-                    <div class="delete">
-                        <button type="button" data-action="delete-item">Delete item</button>
-                    </div>
+    }
+
+    let taskTemplate = (string, item) => {
+
+        return string + ` 
+        <div class="task" data-id="${item.id}">
+                <div class="task__title">
+                    ${item.title}
                 </div>
+                <div class="task__date">
+                    ${item.date}
+                </div>
+                <div class="task__status">
+                    ${item.status}
+                </div>
+                <div class="task__labels">
+                    ${item.labelList.reduce(labelTemplate, '')}
+                </div>
+                <div class="task__done">
+                    <button type="button" data-action="set-item-status">Task done</button>
+                </div>
+                <div class="task__delete">
+                    <button type="button" data-action="delete-item">Delete task</button>
+                </div>
+            </div>
                 `
-        });
-    }
+    };
+
+    return list.reduce(taskTemplate, '');
+
 }
 
 
-function toDoElement(title, date, status) {
-    // let element = createElement('div', 'app__item', '');
-    // element.append(createElement('div', 'title', title));
-    // element.append(createElement('div', 'date', date));
-    // element.append(createElement('div', 'status', status));
+// function manageClicks(e) {
+//     let element = e.target.closest('button');
+//     if (element === null) return;
 
-    // element.append(createElement('button', 'delete', "Delete"));
+//     let action = element.getAttribute('data-action');
 
-    return element;
-}
+//     console.log(action);
 
-function createElement(which, cssClass, innerHTML) {
-    let element = document.createElement(which);
-    element.classList.add(cssClass);
-    element.innerHTML = innerHTML;
-    return element;
-}
+//     if (action === 'reset') {
+//         toDoList = [];
+//         removeFromLocalStorage('toDoList');
+//     }
+//     if (action === 'add-item') {
+//         let toDoString = readUserInput();
+//         updateList(toDoString, toDoList);
+//         writeToLocalStorage('toDoList', toDoList);
+//     }
+//     if (action === 'delete-item') {
+//         let id = getItemId(element);
+//         deleteItemFromList(id, toDoList);
+//         writeToLocalStorage('toDoList', toDoList);
+//     }
+//     renderApp();
+// }
+
+
+// function getItemId(element) {
+//     return element.closest('.app__item').getAttribute('data-id');
+// }
+
+// function deleteItemFromList(id, list) {
+//     list.forEach(function(listItem, index) {
+//         if (listItem['id'] === id) {
+//             list.splice(index, 1);
+//         }
+//     })
+// }
+
+// function readUserInput() {
+//     let toDoString = document.querySelector('#to-do-text').value;
+//     return toDoString;
+// }
+
+// function updateList(string, list) {
+//     let obj = { 'title': string };
+//     obj['date'] = new Date();
+//     obj['status'] = 'undone';
+
+//     let id = (Math.floor(Math.random() * 1000000000000000)).toString();
+//     obj['id'] = id;
+//     list.push(obj);
+
+// }
+
+
+
+// function writeToLocalStorage(key, value) {
+//     window.localStorage.setItem(key, JSON.stringify(value));
+// }
+
+// function removeFromLocalStorage(key) {
+//     window.localStorage.removeItem(key);
+// }
+
+// let readFromLocalStorage = (key) => {
+//     return JSON.parse(window.localStorage.getItem(key)) || [];
+// }
+
+
+
+// function toDoElement(title, date, status) {
+//     // let element = createElement('div', 'app__item', '');
+//     // element.append(createElement('div', 'title', title));
+//     // element.append(createElement('div', 'date', date));
+//     // element.append(createElement('div', 'status', status));
+
+//     // element.append(createElement('button', 'delete', "Delete"));
+
+//     return element;
+// }
+
+// function createElement(which, cssClass, innerHTML) {
+//     let element = document.createElement(which);
+//     element.classList.add(cssClass);
+//     element.innerHTML = innerHTML;
+//     return element;
+// }

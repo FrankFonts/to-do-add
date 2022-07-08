@@ -27,15 +27,19 @@
 }
 .app__content {
   width: 100%;
-  border: 1px solid #ddd;
   margin: 0 0 8px 0;
 }
-.app__item {
+
+.task {
   width: 100%;
   border: 1px solid #ddd;
   display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
   justify-content: space-between;
+  align-items: center;
   padding: 4px 8px;
+  margin: 0 0 4px 0;
 }
 
 /*# sourceMappingURL=index.css.map */
