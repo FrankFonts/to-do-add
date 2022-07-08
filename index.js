@@ -1,42 +1,88 @@
+let aList = [];
+
 window.addEventListener('load', function() {
-    // let toDoList = readFromLocalStorage('toDoList');
+    aList = [
+        // list item
+        {
+            'listID': 'First Tasklist',
+            'taskList': [{
+                'id': '000000000001',
+                'title': 'task title 1',
+                'date': 'task date 1',
+                'status': 'task status 1',
+                'labelList': ['label 1', 'label 2']
+            }, {
+                'id': '000000000002',
+                'title': 'task title 2',
+                'date': 'task date 2',
+                'status': 'task status 2',
+                'labelList': ['label 3', 'label 4']
+            }, {
+                'id': '000000000003',
+                'title': 'task title 3',
+                'date': 'task date 3',
+                'status': 'task status 3',
+                'labelList': ['label 5', 'label 6']
+            }]
+        },
+        // list item
+        {
+            'listID': 'First Tasklist',
+            'taskList': [{
+                'id': '000000000001',
+                'title': 'task title 1',
+                'date': 'task date 1',
+                'status': 'task status 1',
+                'labelList': ['label 1', 'label 2']
+            }, {
+                'id': '000000000002',
+                'title': 'task title 2',
+                'date': 'task date 2',
+                'status': 'task status 2',
+                'labelList': ['label 3', 'label 4']
+            }, {
+                'id': '000000000003',
+                'title': 'task title 3',
+                'date': 'task date 3',
+                'status': 'task status 3',
+                'labelList': ['label 5', 'label 6']
+            }]
+        },
+    ]
 
-    let toDoList = [{
-        'title': 'task title 1',
-        'date': 'task date 1',
-        'status': 'task status 1',
-        'labelList': ['label 1', 'label 2']
-    }, {
-        'title': 'task title 2',
-        'date': 'task date 2',
-        'status': 'task status 2',
-        'labelList': ['label 3', 'label 4']
-    }, ]
+    console.log(aList);
 
-    renderApp('.app__content', toDoList);
+    renderApp('app', aList);
 });
 
-// document.addEventListener('click', manageClicks);
+document.addEventListener('click', manageButtonClicks);
 
 /**
  * Render the list to the DOM
  * @param {String} element The element to use as DOM container
  * @param {Array} list The list to render into DOM container
  */
-function renderApp(element, list) {
+let renderApp = (element, list) => {
     let elementToRenderListInto = document.querySelector(element);
 
     if (!elementToRenderListInto || !list) return;
 
-    elementToRenderListInto.innerHTML = renderList(list);
+    elementToRenderListInto.innerHTML = '';
+
+    list.forEach(thisList => {
+        elementToRenderListInto.innerHTML += renderList(thisList);
+    })
 
 }
 
-
-
+/**
+ * Compile and return an HTML template from a list
+ * @param {Array} list The list of task objects
+ * @return {String} The HTML string
+ */
 let renderList = list => {
 
-    if (list.length === 0) {
+    if (list['taskList'].length === 0) {
         return `
         <div class="app__message">Nothing to to!</div>
         `
@@ -44,7 +90,6 @@ let renderList = list => {
 
     let labelTemplate = (string, item) => {
         return string + `
-            
             <span class="task__label">${item}</span>
                 `
     }
@@ -66,44 +111,69 @@ let renderList = list => {
                     ${item.labelList.reduce(labelTemplate, '')}
                 </div>
                 <div class="task__done">
-                    <button type="button" data-action="set-item-status">Task done</button>
+                    <button type="button" data-action="set-task-status">Task done</button>
                 </div>
                 <div class="task__delete">
-                    <button type="button" data-action="delete-item">Delete task</button>
+                    <button type="button" data-action="delete-task">Delete task</button>
                 </div>
             </div>
                 `
     };
 
-    return list.reduce(taskTemplate, '');
+    let appTemplate = (listId, string) => {
+        return `
+
+            <div class="list__title">
+                <h2>${listId}<h2>
+            </div>
+            <div class="app__controls">
+                <input type="text" value="Add a to do" id="to-do-text">
+                <button type="button" data-action="add-task">Add new task</button>
+            </div>
+            <div class="app__content">${string}</div>
+            <div class="app__controls">
+                <button type="button" data-action="reset-task-list">Reset task list</button>
+            </div>
+        `
+    }
+
+    return appTemplate(list.listID, list.taskList.reduce(taskTemplate, ''));
 
 }
 
+/**
+ * Sort buttons and run code according to their function 
+ * @param {*} event The click event
+ */
+function manageButtonClicks(event) {
+    let button = event.target.closest('button');
 
-// function manageClicks(e) {
-//     let element = e.target.closest('button');
-//     if (element === null) return;
+    if (!button) return;
 
-//     let action = element.getAttribute('data-action');
+    if (button) {
+        let action = button.getAttribute('data-action');
 
-//     console.log(action);
+        console.log(action);
+    }
 
-//     if (action === 'reset') {
-//         toDoList = [];
-//         removeFromLocalStorage('toDoList');
-//     }
-//     if (action === 'add-item') {
-//         let toDoString = readUserInput();
-//         updateList(toDoString, toDoList);
-//         writeToLocalStorage('toDoList', toDoList);
-//     }
-//     if (action === 'delete-item') {
-//         let id = getItemId(element);
-//         deleteItemFromList(id, toDoList);
-//         writeToLocalStorage('toDoList', toDoList);
-//     }
-//     renderApp();
-// }
+
+
+    //     if (action === 'reset') {
+    //         toDoList = [];
+    //         removeFromLocalStorage('toDoList');
+    //     }
+    //     if (action === 'add-item') {
+    //         let toDoString = readUserInput();
+    //         updateList(toDoString, toDoList);
+    //         writeToLocalStorage('toDoList', toDoList);
+    //     }
+    //     if (action === 'delete-item') {
+    //         let id = getItemId(element);
+    //         deleteItemFromList(id, toDoList);
+    //         writeToLocalStorage('toDoList', toDoList);
+    //     }
+    //     renderApp();
+}
 
 
 // function getItemId(element) {
