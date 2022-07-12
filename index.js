@@ -1,239 +1,378 @@
-let aList = [];
+// the simplest to-do list in 30 mins
+// actually it was 39 mins
+// it sucks
+// BUT it works
 
-window.addEventListener('load', function() {
-    aList = [
-        // list item
-        {
-            'listID': 'First Tasklist',
-            'taskList': [{
-                'id': '000000000001',
-                'title': 'task title 1',
-                'date': 'task date 1',
-                'status': 'task status 1',
-                'labelList': ['label 1', 'label 2']
-            }, {
-                'id': '000000000002',
-                'title': 'task title 2',
-                'date': 'task date 2',
-                'status': 'task status 2',
-                'labelList': ['label 3', 'label 4']
-            }, {
-                'id': '000000000003',
-                'title': 'task title 3',
-                'date': 'task date 3',
-                'status': 'task status 3',
-                'labelList': ['label 5', 'label 6']
-            }]
-        },
-        // list item
-        {
-            'listID': 'First Tasklist',
-            'taskList': [{
-                'id': '000000000001',
-                'title': 'task title 1',
-                'date': 'task date 1',
-                'status': 'task status 1',
-                'labelList': ['label 1', 'label 2']
-            }, {
-                'id': '000000000002',
-                'title': 'task title 2',
-                'date': 'task date 2',
-                'status': 'task status 2',
-                'labelList': ['label 3', 'label 4']
-            }, {
-                'id': '000000000003',
-                'title': 'task title 3',
-                'date': 'task date 3',
-                'status': 'task status 3',
-                'labelList': ['label 5', 'label 6']
-            }]
-        },
-    ]
 
-    console.log(aList);
+"use strict"
 
-    renderApp('app', aList);
-});
+let appElement = document.querySelector('app');
 
-document.addEventListener('click', manageButtonClicks);
+let tasks = [];
 
-/**
- * Render the list to the DOM
- * @param {String} element The element to use as DOM container
- * @param {Array} list The list to render into DOM container
- */
-let renderApp = (element, list) => {
-    let elementToRenderListInto = document.querySelector(element);
 
-    if (!elementToRenderListInto || !list) return;
 
-    elementToRenderListInto.innerHTML = '';
+window.addEventListener('load', setup());
 
-    list.forEach(thisList => {
-        elementToRenderListInto.innerHTML += renderList(thisList);
+window.addEventListener('click', manageClicks);
+
+// window.addEventListener('onkeypress', );
+
+
+function setup() {
+
+    tasks = JSON.parse(localStorage.getItem('tasks'));
+    renderTaskList();
+}
+
+function updateLocalStorage() {
+    localStorage.setItem('tasks', JSON.stringify(tasks));
+}
+
+function addNewTask() {
+    let userInput = document.querySelector('#user-input').value;
+    tasks.push({
+        'title': userInput,
+        'status': 'undone'
+    });
+
+    updateLocalStorage();
+    renderTaskList();
+}
+
+function deleteTask(taskId) {
+    tasks = tasks.filter(task => {
+        if (task.title !== taskId) {
+            return task;
+        }
     })
 
+    updateLocalStorage();
+    renderTaskList();
 }
 
-/**
- * Compile and return an HTML template from a list
- * @param {Array} list The list of task objects
- * @return {String} The HTML string
- */
-let renderList = list => {
-
-    if (list['taskList'].length === 0) {
-        return `
-        <div class="app__message">Nothing to to!</div>
-        `
-    }
-
-    let labelTemplate = (string, item) => {
-        return string + `
-            <span class="task__label">${item}</span>
-                `
-    }
-
-    let taskTemplate = (string, item) => {
-
-        return string + ` 
-        <div class="task" data-id="${item.id}">
-                <div class="task__title">
-                    ${item.title}
-                </div>
-                <div class="task__date">
-                    ${item.date}
-                </div>
-                <div class="task__status">
-                    ${item.status}
-                </div>
-                <div class="task__labels">
-                    ${item.labelList.reduce(labelTemplate, '')}
-                </div>
-                <div class="task__done">
-                    <button type="button" data-action="set-task-status">Task done</button>
-                </div>
-                <div class="task__delete">
-                    <button type="button" data-action="delete-task">Delete task</button>
-                </div>
-            </div>
-                `
+function manageClicks(e) {
+    if (e.target.getAttribute('data-action') === 'add-new-task') {
+        addNewTask();
+    };
+    if (e.target.getAttribute('data-action') === 'delete-task') {
+        deleteTask(e.target.getAttribute('data-task'));
     };
 
-    let appTemplate = (listId, string) => {
-        return `
-
-            <div class="list__title">
-                <h2>${listId}<h2>
-            </div>
-            <div class="app__controls">
-                <input type="text" value="Add a to do" id="to-do-text">
-                <button type="button" data-action="add-task">Add new task</button>
-            </div>
-            <div class="app__content">${string}</div>
-            <div class="app__controls">
-                <button type="button" data-action="reset-task-list">Reset task list</button>
-            </div>
-        `
-    }
-
-    return appTemplate(list.listID, list.taskList.reduce(taskTemplate, ''));
-
 }
 
-/**
- * Sort buttons and run code according to their function 
- * @param {*} event The click event
- */
-function manageButtonClicks(event) {
-    let button = event.target.closest('button');
+function renderTaskList() {
+    let template = `
+        <div style="display: flex; justify-content: space-between; border: 1px solid #ddd; margin-bottom: 2px;">
+                <div>
+                    <input type="text" id="user-input">
+                </div>
+                <div>
+                    <button data-action="add-new-task">Add new task</button>
+                </div>
+            </div>
+    `;
 
-    if (!button) return;
-
-    if (button) {
-        let action = button.getAttribute('data-action');
-
-        console.log(action);
+    for (let task of tasks) {
+        template += `
+            <div style="display: flex; justify-content: space-between; border: 1px solid #ddd; margin-bottom: 2px;">
+                <div>
+                    ${task.title}
+                </div>
+                <div>
+                    <button data-action="delete-task" data-task="${task.title}">Delete task</button>
+                </div>
+            </div>
+        `;
     }
 
-
-
-    //     if (action === 'reset') {
-    //         toDoList = [];
-    //         removeFromLocalStorage('toDoList');
-    //     }
-    //     if (action === 'add-item') {
-    //         let toDoString = readUserInput();
-    //         updateList(toDoString, toDoList);
-    //         writeToLocalStorage('toDoList', toDoList);
-    //     }
-    //     if (action === 'delete-item') {
-    //         let id = getItemId(element);
-    //         deleteItemFromList(id, toDoList);
-    //         writeToLocalStorage('toDoList', toDoList);
-    //     }
-    //     renderApp();
+    appElement.innerHTML = template;
 }
 
 
-// function getItemId(element) {
-//     return element.closest('.app__item').getAttribute('data-id');
-// }
+// class ToDoApp {
+//     constructor() {
+//         this.lists = {};
+//     }
 
-// function deleteItemFromList(id, list) {
-//     list.forEach(function(listItem, index) {
-//         if (listItem['id'] === id) {
-//             list.splice(index, 1);
+//     addList(listID) {
+//         this.lists[listID] = new taskList(listID);
+//     }
+
+//     addTask(listID, taskID) {
+//         this.lists[listID]['taskList'].push(new task(taskID));
+//     }
+
+//     renderAllLists(element) {
+//         let temp = '';
+//         for (const list in this.lists) {
+//             temp += `${JSON.stringify(this.lists[list])} <br>`;
 //         }
-//     })
-// }
+//         element.innerHTML = temp;
+//     }
 
-// function readUserInput() {
-//     let toDoString = document.querySelector('#to-do-text').value;
-//     return toDoString;
-// }
+//     returnList(listID) {
+//         return this.lists[listID]['taskList'].reduce((template, task) => template + task['taskId']);
+//     }
 
-// function updateList(string, list) {
-//     let obj = { 'title': string };
-//     obj['date'] = new Date();
-//     obj['status'] = 'undone';
-
-//     let id = (Math.floor(Math.random() * 1000000000000000)).toString();
-//     obj['id'] = id;
-//     list.push(obj);
-
+//     returnTaskTemplate(template, task) {
+//         console.log(task);
+//         return template + task['taskId'];
+//     }
 // }
 
 
-
-// function writeToLocalStorage(key, value) {
-//     window.localStorage.setItem(key, JSON.stringify(value));
+// class taskList {
+//     constructor(listID) {
+//         this.listID = listID;
+//         this.taskList = [];
+//     }
+// }
+// class task {
+//     constructor(taskID) {
+//         this.taskID = taskID;
+//         this.status = 'to do';
+//         let date = Date.now();
+//         this.date = date;
+//     }
 // }
 
-// function removeFromLocalStorage(key) {
-//     window.localStorage.removeItem(key);
-// }
+// const toDoApp = new ToDoApp();
 
-// let readFromLocalStorage = (key) => {
-//     return JSON.parse(window.localStorage.getItem(key)) || [];
-// }
+// toDoApp.addList('first list');
+// toDoApp.addTask('first list', 'first task');
+// toDoApp.addTask('first list', 'second task');
+
+// toDoApp.addList('second list');
+// toDoApp.addTask('second list', 'first task');
+// toDoApp.addTask('second list', 'second task');
+
+
+// const element = document.querySelector('app');
+// element.innerHTML = toDoApp.returnList('first list');
 
 
 
-// function toDoElement(title, date, status) {
-//     // let element = createElement('div', 'app__item', '');
-//     // element.append(createElement('div', 'title', title));
-//     // element.append(createElement('div', 'date', date));
-//     // element.append(createElement('div', 'status', status));
 
-//     // element.append(createElement('button', 'delete', "Delete"));
 
-//     return element;
-// }
+// //
+// //
+// // test 
 
-// function createElement(which, cssClass, innerHTML) {
-//     let element = document.createElement(which);
-//     element.classList.add(cssClass);
-//     element.innerHTML = innerHTML;
-//     return element;
-// }
+// console.log(toDoApp);
+
+
+// // let listFirst = [
+// //     // list item
+// //     {
+// //         'listID': 'First Tasklist',
+// //         'taskList': [{
+// //             'id': '000000000001',
+// //             'title': 'task title 1',
+// //             'date': 'task date 1',
+// //             'status': 'task status 1',
+// //             'labelList': ['label 1', 'label 2']
+// //         }, {
+// //             'id': '000000000002',
+// //             'title': 'task title 2',
+// //             'date': 'task date 2',
+// //             'status': 'task status 2',
+// //             'labelList': ['label 3', 'label 4']
+// //         }, {
+// //             'id': '000000000003',
+// //             'title': 'task title 3',
+// //             'date': 'task date 3',
+// //             'status': 'task status 3',
+// //             'labelList': ['label 5', 'label 6']
+// //         }]
+// //     },
+
+// // ]
+
+// // window.addEventListener("load", function() {
+
+// //     let apps = document.querySelectorAll('app');
+
+// //     console.log(apps, 'hello');
+
+// //     if (!apps) return;
+
+// //     apps.forEach(element => renderApp(element));
+
+// // });
+
+// // document.addEventListener('click', manageButtonClicks);
+
+// // /**
+// //  * Render the list to the DOM
+// //  * @param {String} element The element to use as DOM container
+// //  * @param {Array} list The list to render into DOM container
+// //  */
+// // let renderApp = (element) => {
+// //     let elementToRenderListInto = element;
+
+// //     let listToRender = elementToRenderListInto.getAttribute('data-render');
+
+// //     console.log(listToRender);
+
+// //     elementToRenderListInto.innerHTML = '';
+
+// //     listToRender.forEach(thisList => {
+// //         elementToRenderListInto.innerHTML += renderList(thisList);
+// //     })
+
+// // }
+
+// // /**
+// //  * Compile and return an HTML template from a list
+// //  * @param {Array} list The list of task objects
+// //  * @return {String} The HTML string
+// //  */
+// // let renderList = list => {
+
+// //     // if (list['taskList'].length === 0) {
+// //     //     return `
+// //     //     <div class="app__message">Nothing to to!</div>
+// //     //     `
+// //     // }
+
+// //     let labelTemplate = (string, item) => {
+// //         return string + `
+// //             <span class="task__label">${item}</span>
+// //                 `
+// //     }
+
+// //     let taskTemplate = (string, item) => {
+
+// //         return string + ` 
+// //         <div class="task" data-id="${item.id}">
+// //                 <div class="task__title">
+// //                     ${item.title}
+// //                 </div>
+// //                 <div class="task__date">
+// //                     ${item.date}
+// //                 </div>
+// //                 <div class="task__status">
+// //                     ${item.status}
+// //                 </div>
+// //                 <div class="task__labels">
+// //                     ${item.labelList.reduce(labelTemplate, '')}
+// //                 </div>
+// //                 <div class="task__done">
+// //                     <button type="button" data-action="set-task-status">Task done</button>
+// //                 </div>
+// //                 <div class="task__delete">
+// //                     <button type="button" data-action="delete-task">Delete task</button>
+// //                 </div>
+// //             </div>
+// //                 `
+// //     };
+
+// //     let appTemplate = (listId, string) => {
+// //         return `
+
+// //             <div class="list__title">
+// //                 <h2>${listId}<h2>
+// //             </div>
+// //             <div class="app__controls">
+// //                 <input type="text" value="Add a to do" id="to-do-text">
+// //                 <button type="button" data-action="add-task">Add new task</button>
+// //             </div>
+// //             <div class="app__content">${string}</div>
+// //             <div class="app__controls">
+// //                 <button type="button" data-action="delete-all-tasks">Delete all tasks</button>
+// //             </div>
+// //         `
+// //     }
+
+// //     return appTemplate(list.listID, list.taskList.reduce(taskTemplate, ''));
+
+// // }
+
+// // /**
+// //  * Sort buttons and run code according to their function 
+// //  * @param {*} event The click event
+// //  */
+// // function manageButtonClicks(event) {
+// //     let button = event.target.closest('button');
+
+// //     if (!button) return;
+
+// //     if (button) {
+// //         let action = button.getAttribute('data-action');
+
+// //         console.log(action);
+
+// //         if (action === 'add-task') {}
+
+// //         if (action === 'delete-task') {}
+
+// //         if (action === 'set-task-status') {}
+
+// //         if (action === 'delete-all-tasks') {
+// //             listFirst[0]['taskList'] = [];
+// //             console.log(listFirst);
+// //         }
+
+// //         renderApp('app', listFirst);
+// //     }
+
+// //     //     if (action === 'reset') {
+// //     //         toDoList = [];
+// //     //         removeFromLocalStorage('toDoList');
+// //     //     }
+// //     //     if (action === 'add-item') {
+// //     //         let toDoString = readUserInput();
+// //     //         updateList(toDoString, toDoList);
+// //     //         writeToLocalStorage('toDoList', toDoList);
+// //     //     }
+// //     //     if (action === 'delete-item') {
+// //     //         let id = getItemId(element);
+// //     //         deleteItemFromList(id, toDoList);
+// //     //         writeToLocalStorage('toDoList', toDoList);
+// //     //     }
+// //     //     renderApp();
+// // }
+
+
+// // // function getItemId(element) {
+// // //     return element.closest('.app__item').getAttribute('data-id');
+// // // }
+
+// // // function deleteItemFromList(id, list) {
+// // //     list.forEach(function(listItem, index) {
+// // //         if (listItem['id'] === id) {
+// // //             list.splice(index, 1);
+// // //         }
+// // //     })
+// // // }
+
+// // // function readUserInput() {
+// // //     let toDoString = document.querySelector('#to-do-text').value;
+// // //     return toDoString;
+// // // }
+
+// // // function updateList(string, list) {
+// // //     let obj = { 'title': string };
+// // //     obj['date'] = new Date();
+// // //     obj['status'] = 'undone';
+
+// // //     let id = (Math.floor(Math.random() * 1000000000000000)).toString();
+// // //     obj['id'] = id;
+// // //     list.push(obj);
+
+// // // }
+
+
+
+// // // function writeToLocalStorage(key, value) {
+// // //     window.localStorage.setItem(key, JSON.stringify(value));
+// // // }
+
+// // // function removeFromLocalStorage(key) {
+// // //     window.localStorage.removeItem(key);
+// // // }
+
+// // // let readFromLocalStorage = (key) => {
+// // //     return JSON.parse(window.localStorage.getItem(key)) || [];
+// // // }
