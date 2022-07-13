@@ -4,7 +4,7 @@
 // BUT it works
 
 
-"use strict"
+
 
 let appElement = document.querySelector('app');
 
@@ -16,11 +16,9 @@ window.addEventListener('load', setup());
 
 window.addEventListener('click', manageClicks);
 
-// window.addEventListener('onkeypress', );
 
 
 function setup() {
-
     tasks = JSON.parse(localStorage.getItem('tasks'));
     renderTaskList();
 }
