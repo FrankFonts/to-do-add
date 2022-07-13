@@ -19,7 +19,7 @@ window.addEventListener('click', manageClicks);
 
 
 function setup() {
-    tasks = JSON.parse(localStorage.getItem('tasks'));
+    tasks = JSON.parse(localStorage.getItem('tasks')) || [];
     renderTaskList();
 }
 
