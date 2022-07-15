@@ -80,10 +80,10 @@ function renderTaskList() {
     for (let task of tasks) {
         template += `
             <div class="task task--${task.status}">
-                <div>
+                <div class="task__title">
                     ${task.title}
                 </div>
-                <div>
+                <div class="task__control">
                     <button class="toggle-task-status" data-action="toggle-task-status" data-index="${index}"></button>
                     <button data-action="delete-task" data-task="${task.title}">Delete</button>
                 </div>

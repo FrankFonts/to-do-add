@@ -1,7 +1,7 @@
 body {
   margin: 0;
   padding: 0;
-  background-color: #ddd;
+  background-color: #fff;
 }
 
 .list {
@@ -24,26 +24,51 @@ body {
   margin: 0 0 8px 0;
   padding: 8px;
   box-sizing: border-box;
+  border: 1px solid #ddd;
+  text-align: center;
 }
 
 .task {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border: 1px solid #aaa;
+  flex-wrap: wrap;
+  border: 1px solid #ddd;
   background-color: #fff;
   margin: 0 0 8px 0;
   padding: 8px;
   box-sizing: border-box;
+  box-shadow: rgba(0, 0, 0, 0.1) 0 6px 12px 4px;
+}
+.task__title {
+  width: 100%;
+  margin: 0 0 8px 0;
+  text-align: center;
+}
+.task__control {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: center;
+}
+.task button {
+  width: calc(50% - 8px);
+  max-width: 120px;
+}
+.task--undone {
+  z-index: 20;
 }
 .task--undone button.toggle-task-status::after {
-  content: "undone";
+  content: "Undone";
 }
 .task--done {
-  background-color: #ddd;
+  z-index: 10;
+  opacity: 0.2;
 }
 .task--done button.toggle-task-status::after {
-  content: "done";
+  content: "Done";
 }
 
 /*# sourceMappingURL=index.css.map */
