@@ -1,21 +1,12 @@
-// the simplest to-do list in 30 mins
-// actually it was 39 mins
-// plus 5 more on the next day spent fixing bugs
-// it sucks
-// BUT it works
-
-
-
-
 let appElement = document.querySelector('app');
 
 let tasks = [];
 
-
-
 window.addEventListener('load', setup());
 
 window.addEventListener('click', manageClicks);
+
+
 
 
 
@@ -28,15 +19,20 @@ function updateLocalStorage() {
     localStorage.setItem('tasks', JSON.stringify(tasks));
 }
 
+function updateApp() {
+    updateLocalStorage();
+    renderTaskList();
+}
+
 function addNewTask() {
     let userInput = document.querySelector('#user-input').value;
+
+    if (!userInput) return;
+
     tasks.unshift({
         'title': userInput,
         'status': 'undone'
-    });
-
-    updateLocalStorage();
-    renderTaskList();
+    })
 }
 
 function deleteTask(taskId) {
@@ -45,45 +41,43 @@ function deleteTask(taskId) {
             return task;
         }
     })
-
-    updateLocalStorage();
-    renderTaskList();
 }
 
 function manageClicks(e) {
     if (e.target.getAttribute('data-action') === 'add-new-task') {
         addNewTask();
+        updateApp();
     };
     if (e.target.getAttribute('data-action') === 'delete-task') {
         deleteTask(e.target.getAttribute('data-task'));
+        updateApp();
     };
 
 }
 
 function renderTaskList() {
     let template = `
-        <div style="display: flex; justify-content: space-between; border: 1px solid #ddd; margin-bottom: 2px;">
-                <div>
-                    <input type="text" id="user-input">
-                </div>
-                <div>
-                    <button data-action="add-new-task">Add new task</button>
-                </div>
-            </div>
+        <div class="list__controls">
+            <input type="text" id="user-input" class="list__input">
+            <button data-action="add-new-task" class="list__input">Add new task</button>
+        </div>
     `;
 
     for (let task of tasks) {
         template += `
-            <div style="display: flex; justify-content: space-between; border: 1px solid #ddd; margin-bottom: 2px;">
+            <div class="task">
                 <div>
                     ${task.title}
                 </div>
                 <div>
-                    <button data-action="delete-task" data-task="${task.title}">Delete task</button>
+                    <button data-action="delete-task" data-task="${task.title}">Delete</button>
                 </div>
             </div>
-        `;
+        `
     }
+
+    template = `<div class="list"> ${template} </div>`;
+
 
     appElement.innerHTML = template;
 }
@@ -105,7 +99,8 @@ function renderTaskList() {
 //     renderAllLists(element) {
 //         let temp = '';
 //         for (const list in this.lists) {
-//             temp += `${JSON.stringify(this.lists[list])} <br>`;
+//             temp += `
+// $ { JSON.stringify(this.lists[list]) } < br > `;
 //         }
 //         element.innerHTML = temp;
 //     }
