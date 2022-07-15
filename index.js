@@ -43,6 +43,14 @@ function deleteTask(taskId) {
     })
 }
 
+function toggleTaskStatus(index) {
+    if (tasks[index]['status'] === 'undone') {
+        tasks[index]['status'] = 'done';
+    } else {
+        tasks[index]['status'] = 'undone';
+    }
+}
+
 function manageClicks(e) {
     if (e.target.getAttribute('data-action') === 'add-new-task') {
         addNewTask();
@@ -50,6 +58,10 @@ function manageClicks(e) {
     };
     if (e.target.getAttribute('data-action') === 'delete-task') {
         deleteTask(e.target.getAttribute('data-task'));
+        updateApp();
+    };
+    if (e.target.getAttribute('data-action') === 'toggle-task-status') {
+        toggleTaskStatus(e.target.getAttribute('data-index'));
         updateApp();
     };
 
@@ -63,17 +75,21 @@ function renderTaskList() {
         </div>
     `;
 
+    let index = 0;
+
     for (let task of tasks) {
         template += `
-            <div class="task">
+            <div class="task task--${task.status}">
                 <div>
                     ${task.title}
                 </div>
                 <div>
+                    <button class="toggle-task-status" data-action="toggle-task-status" data-index="${index}"></button>
                     <button data-action="delete-task" data-task="${task.title}">Delete</button>
                 </div>
             </div>
         `
+        index++;
     }
 
     template = `<div class="list"> ${template} </div>`;
