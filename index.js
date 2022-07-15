@@ -1,5 +1,6 @@
 // the simplest to-do list in 30 mins
 // actually it was 39 mins
+// plus 5 more on the next day spent fixing bugs
 // it sucks
 // BUT it works
 
@@ -29,7 +30,7 @@ function updateLocalStorage() {
 
 function addNewTask() {
     let userInput = document.querySelector('#user-input').value;
-    tasks.push({
+    tasks.unshift({
         'title': userInput,
         'status': 'undone'
     });
